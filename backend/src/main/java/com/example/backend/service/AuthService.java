@@ -3,7 +3,7 @@ package com.example.backend.service;
 import com.example.backend.dto.response.ApiResponse;
 import com.example.backend.dto.request.auth.LoginRequest;
 import com.example.backend.dto.request.auth.RegisterRequest;
-import com.example.backend.entity.Role;
+import com.example.backend.entity.UserRole;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +33,9 @@ public class AuthService {
         userRepo.save(User.builder()
                 .name(req.name())
                 .email(req.email())
+                .phone(req.phone())
                 .password(encoder.encode(req.password()))
-                .roles(Set.of(Role.ROLE_USER))
+                .role(req.role())
                 .build());
 
         return ResponseEntity.ok(ApiResponse.ok("Registered successfully"));
@@ -59,7 +60,7 @@ public class AuthService {
                         "id",       user.getId(),
                         "name", user.getName(),
                         "email",    user.getEmail(),
-                        "roles",    user.getRoles()
+                        "roles",    user.getRole()
                 )));
     }
 
@@ -75,7 +76,7 @@ public class AuthService {
                         "id",    u.getId(),
                         "name",  u.getName(),
                         "email", u.getEmail(),
-                        "roles", u.getRoles()))))
+                        "roles", u.getRole()))))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ApiResponse.error("User not found")));
     }

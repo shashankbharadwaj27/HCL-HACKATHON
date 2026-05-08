@@ -21,13 +21,13 @@ public class User {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String name;
 
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
-    private String passwordHash;
+    private String password;
 
     @Column(nullable = false)
     private String phone;
