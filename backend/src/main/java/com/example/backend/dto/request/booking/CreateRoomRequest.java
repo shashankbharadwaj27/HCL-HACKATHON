@@ -1,4 +1,4 @@
-package com.example.backend.dto;
+package com.example.backend.dto.request.booking;
 
 import com.example.backend.entity.RoomType;
 import jakarta.validation.constraints.NotBlank;
