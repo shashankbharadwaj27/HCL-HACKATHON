@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchHotelById } from "../features/hotelsSlice";
-import { createBooking } from "../features/bookingsSlice";
+import { fetchHotelById } from "../slices/hotelsSlice";
+import { createBooking } from "../slices/bookingsSlice";
 import Navbar from "../components/Navbar";
 
 export default function BookingPage() {

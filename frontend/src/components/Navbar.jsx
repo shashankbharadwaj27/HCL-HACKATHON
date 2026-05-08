@@ -1,79 +1,93 @@
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "../features/authSlice";
-import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../slices/authSlice'
+import { showToast } from '../slices/uiSlice'
+import './Navbar.css'
 
-export default function Navbar({ onSearchLocation }) {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { user } = useSelector((s) => s.auth);
-  const { list: locations } = useSelector((s) => s.locations);
-  const [selectedLocation, setSelectedLocation] = useState("");
+export default function Navbar() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { user } = useSelector((s) => s.auth)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = async () => {
-    await dispatch(logoutUser());
-    navigate("/login");
-  };
+    await dispatch(logout())
+    dispatch(showToast({ message: 'Signed out successfully', type: 'success' }))
+    navigate('/')
+    setMenuOpen(false)
+  }
 
-  const handleSearch = () => {
-    if (selectedLocation && onSearchLocation) {
-      onSearchLocation(selectedLocation);
-    }
-  };
+  const isActive = (path) => location.pathname === path ? 'active' : ''
 
   return (
-    <nav className="bg-stone-900 border-b border-stone-800 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between mb-4">
-          <Link to="/home" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-amber-400 rounded-sm flex items-center justify-center">
-              <span className="text-stone-950 font-bold text-xs font-mono">HM</span>
+    <header className="navbar">
+      <div className="navbar-inner container">
+        <Link to="/" className="logo">
+          <span className="logo-mark">◆</span>
+          <span className="logo-text">StayLux</span>
+        </Link>
+
+        <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
+          <Link to="/" className={`nav-link ${isActive('/')}`} onClick={() => setMenuOpen(false)}>Explore</Link>
+          {user && (
+            <>
+              {user.role === 'CUSTOMER' && (
+                <Link to="/my-bookings" className={`nav-link ${isActive('/my-bookings')}`} onClick={() => setMenuOpen(false)}>My Stays</Link>
+              )}
+              {user.role === 'OWNER' && (
+                <>
+                  <Link to="/my-hotels" className={`nav-link ${isActive('/my-hotels')}`} onClick={() => setMenuOpen(false)}>My Hotels</Link>
+                  <Link to="/create-hotel" className={`nav-link ${isActive('/create-hotel')}`} onClick={() => setMenuOpen(false)}>Add Hotel</Link>
+                </>
+              )}
+            </>
+          )}
+        </nav>
+
+        <div className="nav-actions">
+          {user ? (
+            <div className="user-menu">
+              <button className="user-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                <span className="user-avatar">{user.name?.[0]?.toUpperCase() || 'U'}</span>
+                <span className="user-name">{user.name?.split(' ')[0]}</span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                  <path d="M2 4l4 4 4-4"/>
+                </svg>
+              </button>
+              {menuOpen && (
+                <div className="dropdown">
+                  <div className="dropdown-header">
+                    <div className="dropdown-name">{user.name}</div>
+                    <div className="dropdown-email">{user.email}</div>
+                    <span className={`badge badge-gold`}>{user.role}</span>
+                  </div>
+                  <div className="dropdown-divider" />
+                  <Link to="/profile" className="dropdown-item" onClick={() => setMenuOpen(false)}>Profile</Link>
+                  {user.role === 'CUSTOMER' && (
+                    <Link to="/my-bookings" className="dropdown-item" onClick={() => setMenuOpen(false)}>My Bookings</Link>
+                  )}
+                  {user.role === 'OWNER' && (
+                    <Link to="/my-hotels" className="dropdown-item" onClick={() => setMenuOpen(false)}>My Hotels</Link>
+                  )}
+                  <div className="dropdown-divider" />
+                  <button className="dropdown-item dropdown-logout" onClick={handleLogout}>Sign Out</button>
+                </div>
+              )}
             </div>
-            <span className="text-stone-200 font-semibold tracking-widest text-xs uppercase">Hotel Manager</span>
-          </Link>
-
-          <div className="flex items-center gap-6">
-            <Link to="/home" className="text-stone-400 hover:text-stone-200 text-sm transition-colors">
-              Home
-            </Link>
-            <Link to="/profile" className="text-stone-400 hover:text-stone-200 text-sm transition-colors">
-              Profile
-            </Link>
-            <Link to="/my-bookings" className="text-stone-400 hover:text-stone-200 text-sm transition-colors">
-              My Bookings
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-stone-400 hover:text-stone-200 text-sm transition-colors flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Sign out
-            </button>
-          </div>
-        </div>
-
-        {/* Search bar */}
-        <div className="flex gap-3 items-center">
-          <select
-            value={selectedLocation}
-            onChange={(e) => setSelectedLocation(e.target.value)}
-            className="flex-1 bg-stone-800 border border-stone-700 text-stone-100 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
-          >
-            <option value="">Search by location...</option>
-            {locations.map((loc) => (
-              <option key={loc.id} value={loc.id}>
-                {loc.city}, {loc.state}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleSearch}
-            className="bg-amber-400 hover:bg-amber-300 text-stone-950 font-semibold text-sm rounded-md px-6 py-2 transition-all duration-150 active:scale-[0.98]">
-            Search
+          ) : (
+            <div className="auth-btns">
+              <Link to="/login" className="btn btn-ghost btn-sm">Sign In</Link>
+              <Link to="/register" className="btn btn-primary btn-sm">Join</Link>
+            </div>
+          )}
+          <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+            <span /><span /><span />
           </button>
         </div>
       </div>
-    </nav>
-  );
+      {menuOpen && <div className="nav-overlay" onClick={() => setMenuOpen(false)} />}
+    </header>
+  )
 }

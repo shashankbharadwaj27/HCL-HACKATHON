@@ -1,0 +1,20 @@
+.my-hotels-page { padding: 3rem 0 5rem; min-height: 100vh; }
+
+.owner-hotels-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+
+.owner-hotel-card {}
+.ohc-image { aspect-ratio: 16/9; overflow: hidden; background: var(--cream); }
+.ohc-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms ease; }
+.owner-hotel-card:hover .ohc-image img { transform: scale(1.04); }
+.ohc-body { padding: 1.25rem; }
+.ohc-location {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.35rem;
+}
+.ohc-name { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.5rem; }
+.ohc-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ohc-actions { display: flex; gap: 0.5rem; }

@@ -1,112 +1,78 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-// import { fetchHotels } from "../features/hotelsSlice";
-// import { fetchLocations, searchHotelsByLocation, clearSearchResults } from "../features/locationsSlice";
-import Navbar from "../components/Navbar";
-import HotelCard from "../components/HotelCard";
+import { useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchHotels } from '../slices/hotelsSlice'
+import { fetchLocations } from '../slices/locationsSlice'
+import HotelCard from '../components/HotelCard'
+import SearchBar from '../components/SearchBar'
+import './Home.css'
 
-export default function HomePage() {
-  const dispatch = useDispatch();
-  const { user } = useSelector((s) => s.auth);
-  const { list: hotels } = useSelector((s) => s.hotels);
-  const { searchResults } = useSelector((s) => s.locations);
-  const [displayedHotels, setDisplayedHotels] = useState([]);
+export default function Home() {
+  const dispatch = useDispatch()
+  const { list: hotels, loading, filters } = useSelector((s) => s.hotels)
 
-  // useEffect(() => {
-  //   dispatch(fetchHotels());
-  //   dispatch(fetchLocations());
-  // }, [dispatch]);
-
+  console.log('Hotels in HomePage:', hotels) // Debug log
   useEffect(() => {
-    // Show search results if available, otherwise show all hotels sorted by rating
-    if (searchResults.length > 0) {
-      // setDisplayedHotels(searchResults);
-    } else {
-      const sorted = [...hotels].sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      // setDisplayedHotels(sorted);
-    }
-  }, [hotels, searchResults]);
+    dispatch(fetchHotels())
+    dispatch(fetchLocations())
+  }, [dispatch])
 
-  const handleSearchLocation = (locationId) => {
-    // dispatch(searchHotelsByLocation(locationId));
-  };
-
-  const handleClearSearch = () => {
-    // dispatch(clearSearchResults());
-  };
-
-  const topRatedHotels = [...hotels].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 6);
+  const filtered = useMemo(() => {
+    return hotels.filter((h) => {
+      const q = filters.search.toLowerCase()
+      if (q && !h.name.toLowerCase().includes(q) &&
+          !h.description?.toLowerCase().includes(q) &&
+          !h.location?.city?.toLowerCase().includes(q)) return false
+      if (filters.locationId && h.location?.id !== filters.locationId) return false
+      return true
+    })
+  }, [hotels, filters])
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100">
-      {/* Navbar */}
-      <Navbar onSearchLocation={handleSearchLocation} />
-
-      {/* Main content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Welcome section */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-light mb-2" style={{ fontFamily: "'Georgia', serif" }}>
-            Welcome, {user?.name?.split(" ")[0]}!
+    <main className="home-page">
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-bg" />
+        <div className="container hero-content">
+          <div className="hero-eyebrow">Curated Hospitality</div>
+          <h1 className="hero-title">
+            Where every stay<br />
+            <em>becomes a memory</em>
           </h1>
-          <p className="text-stone-400 text-lg">Find and book your perfect hotel</p>
+          <p className="hero-sub">
+            Discover exceptional hotels handpicked for those who value the art of travel.
+          </p>
         </div>
+      </section>
 
-        {/* Search results or featured section */}
-        {searchResults.length > 0 ? (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold">Search Results</h2>
-              <button
-                onClick={handleClearSearch}
-                className="text-stone-400 hover:text-stone-200 text-sm transition-colors">
-                Clear Search
-              </button>
+      {/* Search + Hotels */}
+      <section className="hotels-section">
+        <div className="container">
+          <SearchBar />
+
+          <div className="section-header">
+            <div>
+              <div className="eyebrow">Our Collection</div>
+              <h2>{filtered.length} {filtered.length === 1 ? 'Property' : 'Properties'}</h2>
             </div>
-            {displayedHotels.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedHotels.map((hotel) => (
-                  <HotelCard key={hotel.id} hotel={hotel} />
-                ))}
-              </div>
-            ) : (
-              <div className="bg-stone-900 border border-stone-800 rounded-lg p-12 text-center">
-                <p className="text-stone-400">No hotels found in this location</p>
-              </div>
-            )}
           </div>
-        ) : (
-          <>
-            {/* Featured/Nearby hotels section */}
-            <div className="mb-12">
-              <h2 className="text-2xl font-semibold mb-6">Available Hotels</h2>
-              {hotels.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {displayedHotels.slice(0, 6).map((hotel) => (
-                    <HotelCard key={hotel.id} hotel={hotel} />
-                  ))}
-                </div>
-              ) : (
-                <div className="bg-stone-900 border border-stone-800 rounded-lg p-12 text-center">
-                  <p className="text-stone-400">No hotels available</p>
-                </div>
-              )}
-            </div>
 
-            {/* Top-rated hotels section */}
-            {topRatedHotels.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-semibold mb-6">Top Rated Hotels</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {topRatedHotels.map((hotel) => (
-                    <HotelCard key={hotel.id} hotel={hotel} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </main>
-    </div>
-  );
+          {loading ? (
+            <div className="loading-grid grid-3">
+              {[1,2,3,4,5,6].map(i => <div key={i} className="skeleton-card" />)}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="empty-state">
+              <div className="icon">🏨</div>
+              <h3>No hotels found</h3>
+              <p>Try adjusting your search filters</p>
+            </div>
+          ) : (
+            <div className="grid-3">
+              {filtered.map((h) => <HotelCard key={h.id} hotel={h} />)}
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  )
 }

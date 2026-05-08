@@ -1,50 +1,102 @@
-import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { fetchMe } from "./features/authSlice";
-import { fetchLocations } from "./features/locationsSlice";
-import { GuestRoute, PrivateRoute, OwnerRoute } from "./components/RouteGuards";
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchMe } from './slices/authSlice'
 
-// Pages
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import HomePage from "./pages/HomePage";
-import HotelDetailsPage from "./pages/HotelDetailsPage";
-import BookingPage from "./pages/BookingPage";
-import ProfilePage from "./pages/ProfilePage";
-import MyBookingsPage from "./pages/MyBookingsPage";
-import OwnerDashboardPage from "./pages/OwnerDashboardPage";
+import Navbar from './components/Navbar'
+import { Toast, ModalManager } from './components/Overlays'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
-export default function App() {
-  const dispatch = useDispatch();
+import Home from './pages/Homepage'
+import Login from './pages/LoginPage'
+import Register from './pages/RegisterPage'
+import HotelDetail from './pages/HotelDetailsPage'
+import MyBookings from './pages/MyBookings'
+import MyHotels from './pages/MyHotels'
+import CreateHotel from './pages/CreateHotel'
+import AddRoom from './pages/AddRoom'
 
-  // Hydrate auth state and fetch locations on app load
+function AppInit() {
+  const dispatch = useDispatch()
+  const { token, initialized } = useSelector((s) => s.auth)
+
   useEffect(() => {
-    dispatch(fetchMe());
-    dispatch(fetchLocations());
-  }, [dispatch]);
+    if (token && !initialized) {
+      dispatch(fetchMe())
+    } else if (!token) {
+      dispatch({ type: 'auth/setInitialized' })
+    }
+  }, [token, initialized, dispatch])
+
+  if (!initialized) {
+    return (
+      <div className="page-loader">
+        <div className="spinner" style={{ width: 36, height: 36 }} />
+        <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>Loading…</p>
+      </div>
+    )
+  }
 
   return (
-    <BrowserRouter>
+    <>
+      <Navbar />
       <Routes>
-        {/* Public routes — redirect to /home if already authenticated */}
-        <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
-        <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        {/* Protected customer routes */}
-        <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
-        <Route path="/hotel/:id" element={<PrivateRoute><HotelDetailsPage /></PrivateRoute>} />
-        <Route path="/booking/:roomId" element={<PrivateRoute><BookingPage /></PrivateRoute>} />
-        <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-        <Route path="/my-bookings" element={<PrivateRoute><MyBookingsPage /></PrivateRoute>} />
+        {/* Customer routes */}
+        <Route path="/" element={
+          <ProtectedRoute requiredRole="ROLE_CUSTOMER">
+            <Home />
+          </ProtectedRoute>
+        } />
+        <Route path="/hotels/:hotelId" element={
+          <ProtectedRoute requiredRole="ROLE_CUSTOMER">
+            <HotelDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/my-bookings" element={
+          <ProtectedRoute requiredRole="ROLE_CUSTOMER">
+            <MyBookings />
+          </ProtectedRoute>
+        } />
 
         {/* Owner routes */}
-        <Route path="/owner-dashboard" element={<OwnerRoute><OwnerDashboardPage /></OwnerRoute>} />
+        <Route path="/my-hotels" element={
+          <ProtectedRoute requiredRole="ROLE_OWNER">
+            <MyHotels />
+          </ProtectedRoute>
+        } />
+        <Route path="/create-hotel" element={
+          <ProtectedRoute requiredRole="ROLE_OWNER">
+            <CreateHotel />
+          </ProtectedRoute>
+        } />
+        <Route path="/add-room/:hotelId" element={
+          <ProtectedRoute requiredRole="ROLE_OWNER">
+            <AddRoom />
+          </ProtectedRoute>
+        } />
 
-        {/* Default redirect */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="*" element={<Navigate to="/home" replace />} />
+        {/* 404 */}
+        <Route path="*" element={
+          <div className="page-loader" style={{ flexDirection: 'column', gap: '1rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 300 }}>Page not found</h2>
+            <a href="/" className="btn btn-primary">Back to Home</a>
+          </div>
+        } />
       </Routes>
+      <Toast />
+      <ModalManager />
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppInit />
     </BrowserRouter>
-  );
+  )
 }
