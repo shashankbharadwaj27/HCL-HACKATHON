@@ -33,7 +33,7 @@ StayLux is a role-based hotel booking application with two distinct user types:
 |---|---|
 | Frontend | React, Redux Toolkit, React Router, Axios |
 | Backend | Spring Boot 3.x, Spring Security, Spring Data JPA |
-| Database | PostgreSQL |
+| Database | MySQL |
 | Authentication | JWT + HTTP-only Cookies |
 | Validation | Jakarta Bean Validation |
 | Logging | SLF4J + Logback |
@@ -142,15 +142,15 @@ staylux/
 
 - Java 17+
 - Node.js 18+
-- PostgreSQL 14+
+- MySQL server
 - Maven 3.8+
 
 ### Backend Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/staylux.git
-cd staylux/backend
+git clone https://github.com/shashankbharadwaj27/HCL-HACKATHON.git
+cd HCL-HACKATHON/backend
 
 # Configure environment variables (see below)
 cp src/main/resources/application.example.properties src/main/resources/application.properties
@@ -162,7 +162,7 @@ cp src/main/resources/application.example.properties src/main/resources/applicat
 ### Frontend Setup
 
 ```bash
-cd staylux/frontend
+cd HCL-HACKATHON/frontend
 
 # Install dependencies
 npm install
