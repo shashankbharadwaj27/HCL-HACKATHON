@@ -16,11 +16,13 @@ export default function ProfilePage() {
     email: user?.email || "",
     phone: user?.phone || "",
   });
+  console.log("User data in ProfilePage:", user);
 
   const handle = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
+  console.l
   const submit = (e) => {
     e.preventDefault();
     // TODO: Implement profile update API call
@@ -68,7 +70,7 @@ export default function ProfilePage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-stone-500">Role</p>
-                  <p className="text-stone-100 font-semibold capitalize">{user?.role || "User"}</p>
+                  <p className="text-stone-100 font-semibold capitalize">{user?.roles === "ROLE_CUSTOMER"?"CUSTOMER" : "OWNER"}</p>
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-stone-500">Phone</p>
