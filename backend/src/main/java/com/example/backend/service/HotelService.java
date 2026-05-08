@@ -38,7 +38,7 @@ public class HotelService {
                 .coverImageUrl(request.coverImageUrl())
                 .owner(owner)
                 .location(location)
-                .rating(0f)
+                .rating(0.0f)
                 .isActive(true)
                 .build();
 

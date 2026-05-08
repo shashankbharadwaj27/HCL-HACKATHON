@@ -17,7 +17,6 @@ public class LocationController {
     private final LocationService locationService;
 
     @PostMapping
-    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<?> addLocation(
             @Valid @RequestBody CreateLocationRequest request
     ) {

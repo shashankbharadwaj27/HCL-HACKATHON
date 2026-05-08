@@ -34,13 +34,13 @@ public class Hotel {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column()
+    @Column
     private String amenities;
 
-    @Column(nullable = false)
+    @Column
     private Float rating;
 
-    @Column(nullable = false)
+    @Column
     private Boolean isActive;
 
     @Column(nullable = true)
