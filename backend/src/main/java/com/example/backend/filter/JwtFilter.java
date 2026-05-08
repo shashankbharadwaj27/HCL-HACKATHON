@@ -1,8 +1,10 @@
 package com.example.backend.filter;
 
 import com.example.backend.service.JwtService;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,23 +20,30 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
+
     private final JwtService jwt;
     private final UserDetailsService userDetailsService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/api/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
                                     FilterChain chain) throws ServletException, IOException {
-        log.info("FILTER RUNNING");
+
         String email = jwt.getEmailFromRequest(req);
-        log.info("EMAIL ="  + email);
+
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var ud = userDetailsService.loadUserByUsername(email);
-            log.info("USER LOADED = " + ud.getUsername());
+            log.info("User loaded: {}", ud.getUsername());
             var auth = new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
             SecurityContextHolder.getContext().setAuthentication(auth);
-            log.info("AUTHENTICATION SET");
+            log.info("Authentication set for: {}", ud.getUsername());
         }
+
         chain.doFilter(req, res);
     }
 }

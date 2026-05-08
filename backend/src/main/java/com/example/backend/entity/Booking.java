@@ -63,7 +63,7 @@ public class Booking {
     }
 
     public enum PaymentStatus {
-        PENDING, PAID, REFUNDED
+        PENDING, PAID
     }
 }
 
