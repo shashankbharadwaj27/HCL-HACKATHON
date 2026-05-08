@@ -16,7 +16,7 @@ export default function RegisterPage() {
   const { status, error } = useSelector((s) => s.auth);
   const loading = status === "loading";
 
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", role: "ROLE_CUSTOMER" });
   const [show, setShow] = useState(false);
   const [success, setSuccess] = useState(false);
   const [touched, setTouched] = useState({});
@@ -28,6 +28,7 @@ export default function RegisterPage() {
 
   const nameErr = touched.name && form.name.trim().length < 3 ? "Name must be at least 3 characters" : null;
   const emailErr = touched.email && !/^\S+@\S+\.\S+$/.test(form.email) ? "Enter a valid email" : null;
+  const phoneErr = touched.phone && !/^[\d\-+\s()]{10,}$/.test(form.phone.replace(/\s/g, "")) ? "Enter a valid phone number" : null;
   const allRulesMet = rules.every((r) => r.test(form.password));
 
   const submit = async (e) => {
@@ -136,6 +137,30 @@ export default function RegisterPage() {
                 placeholder="you@example.com"
               />
               {emailErr && <p className="text-red-400 text-xs mt-1">{emailErr}</p>}
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className="text-stone-400 text-xs uppercase tracking-widest block mb-2">Phone number</label>
+              <input
+                name="phone" type="tel" value={form.phone} onChange={handle} onBlur={blur}
+                required
+                className={`w-full bg-stone-900 border ${phoneErr ? "border-red-600" : "border-stone-700"} text-stone-100 rounded-md px-4 py-3 text-sm placeholder-stone-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors`}
+                placeholder="+1 (555) 123-4567"
+              />
+              {phoneErr && <p className="text-red-400 text-xs mt-1">{phoneErr}</p>}
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="text-stone-400 text-xs uppercase tracking-widest block mb-2">Role</label>
+              <select
+                name="role" value={form.role} onChange={handle}
+                className="w-full bg-stone-900 border border-stone-700 text-stone-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+              >
+                <option value="ROLE_CUSTOMER">Customer</option>
+                <option value="ROLE_OWNER">Hotel Owner</option>
+              </select>
             </div>
 
             {/* Password */}

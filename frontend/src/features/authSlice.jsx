@@ -8,11 +8,13 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (data, { rejectWithValue }) => {
     try {
+      console.log("Attempting registration with data:", data);
       const res = await api.post(`${BASE}/register`, data);
 
       if (!res.data.success) {
         return rejectWithValue(res.data.message);
       }
+      console.log(res);
 
       return res.data;
     } catch (err) {
@@ -28,8 +30,10 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (data, { rejectWithValue }) => {
     try {
+      console.log("Attempting login with data:", data);
       const res = await api.post(`${BASE}/login`, data);
 
+      console.log(res);
       if (!res.data.success) {
         return rejectWithValue(res.data.message);
       }
