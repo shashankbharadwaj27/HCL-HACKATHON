@@ -31,16 +31,16 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-1">
             <div className="w-8 h-8 bg-amber-400 rounded-sm flex items-center justify-center">
-              <span className="text-stone-950 font-bold text-sm font-mono">A</span>
+              <span className="text-stone-950 font-bold text-sm font-mono">BS</span>
             </div>
-            <span className="text-stone-200 font-semibold tracking-widest text-xs uppercase">AuthKit</span>
+            <span className="text-stone-200 font-semibold tracking-widest text-xs uppercase">BookingSystem</span>
           </div>
         </div>
         <div className="relative z-10">
           <blockquote className="text-stone-300 text-3xl font-light leading-snug mb-6" style={{ fontFamily: "'Georgia', serif" }}>
-            "Security is not a product,<br />but a process."
+            "Your getaway begins here — book your perfect stay today."
           </blockquote>
-          <p className="text-stone-500 text-sm">Bruce Schneier</p>
+          <p className="text-stone-500 text-sm">Powered by GNI</p>
         </div>
         <div className="relative z-10 flex gap-2">
           {[...Array(3)].map((_, i) => (
@@ -55,9 +55,9 @@ export default function LoginPage() {
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
             <div className="w-8 h-8 bg-amber-400 rounded-sm flex items-center justify-center">
-              <span className="text-stone-950 font-bold text-sm font-mono">A</span>
+              <span className="text-stone-950 font-bold text-sm font-mono">BS</span>
             </div>
-            <span className="text-stone-200 font-semibold tracking-widest text-xs uppercase">AuthKit</span>
+            <span className="text-stone-200 font-semibold tracking-widest text-xs uppercase">BookingSystem</span>
           </div>
 
           <h1 className="text-stone-100 text-3xl font-light mb-1" style={{ fontFamily: "'Georgia', serif" }}>

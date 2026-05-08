@@ -24,6 +24,24 @@ export function AdminRoute({ children }) {
   return isAdmin ? children : <Navigate to="/home" replace />;
 }
 
+/** Redirects if not an owner */
+export function OwnerRoute({ children }) {
+  const { user, hydrated } = useSelector((s) => s.auth);
+  if (!hydrated) return <Spinner />;
+  if (!user) return <Navigate to="/login" replace />;
+  const isOwner = user.role === "owner" || user.roles?.some((r) => r === "ROLE_OWNER" || r?.name === "ROLE_OWNER");
+  return isOwner ? children : <Navigate to="/home" replace />;
+}
+
+/** Redirects if not a customer */
+export function CustomerRoute({ children }) {
+  const { user, hydrated } = useSelector((s) => s.auth);
+  if (!hydrated) return <Spinner />;
+  if (!user) return <Navigate to="/login" replace />;
+  const isCustomer = user.role === "customer" || user.roles?.some((r) => r === "ROLE_CUSTOMER" || r?.name === "ROLE_CUSTOMER");
+  return isCustomer ? children : <Navigate to="/home" replace />;
+}
+
 function Spinner() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-stone-950">
