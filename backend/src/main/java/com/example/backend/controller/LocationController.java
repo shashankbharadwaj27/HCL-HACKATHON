@@ -1,11 +1,13 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.request.booking.CreateLocationRequest;
+import com.example.backend.entity.Location;
 import com.example.backend.service.LocationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,9 +16,17 @@ public class LocationController {
 
     private final LocationService locationService;
 
-    @GetMapping
-    public ResponseEntity<?> getLocations() {
+    @PostMapping
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<?> addLocation(
+            @Valid @RequestBody CreateLocationRequest request
+    ) {
+        return locationService.addLocation(request);
+    }
 
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getLocations() {
         return locationService.getLocations();
     }
 }

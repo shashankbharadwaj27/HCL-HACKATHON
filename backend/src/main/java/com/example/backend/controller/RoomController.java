@@ -22,15 +22,12 @@ public class RoomController {
     public ResponseEntity<?> createRoom(
             @Valid @RequestBody CreateRoomRequest request
     ) {
-
         return roomService.createRoom(request);
     }
 
     @GetMapping("/hotel/{hotelId}")
-    public ResponseEntity<?> getHotelRooms(
-            @PathVariable UUID hotelId
-    ) {
-
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getHotelRooms(@PathVariable UUID hotelId) {
         return roomService.getHotelRooms(hotelId);
     }
 }

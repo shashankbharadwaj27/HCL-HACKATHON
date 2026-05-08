@@ -48,11 +48,9 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/hotels/**",
                                 "/api/rooms/**",
-                                "/api/locations/**"
-                        ).permitAll()
-
-                        .requestMatchers("/api/bookings/**")
-                        .authenticated()
+                                "/api/locations/**",
+                                "/api/bookings/**"
+                        ).authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

@@ -25,11 +25,7 @@ public class HotelController {
             @Valid @RequestBody CreateHotelRequest request,
             @AuthenticationPrincipal UserDetails user
     ) {
-
-        return hotelService.createHotel(
-                request,
-                user.getUsername()
-        );
+        return hotelService.createHotel(request, user.getUsername());
     }
 
     @GetMapping
@@ -38,10 +34,7 @@ public class HotelController {
     }
 
     @GetMapping("/{hotelId}")
-    public ResponseEntity<?> getHotelById(
-            @PathVariable UUID hotelId
-    ) {
-
+    public ResponseEntity<?> getHotelById(@PathVariable UUID hotelId) {
         return hotelService.getHotelById(hotelId);
     }
 
@@ -50,9 +43,6 @@ public class HotelController {
     public ResponseEntity<?> getOwnerHotels(
             @AuthenticationPrincipal UserDetails user
     ) {
-
-        return hotelService.getOwnerHotels(
-                user.getUsername()
-        );
+        return hotelService.getOwnerHotels(user.getUsername());
     }
 }
